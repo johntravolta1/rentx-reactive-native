@@ -7,6 +7,8 @@ import { CarDetails } from './src/screens/CarDetails';
 import * as SplashScreen from 'expo-splash-screen';
 import { Scheduling } from './src/screens/Scheduling';
 import { SchedulingDetails } from './src/screens/SchedulingDetails';
+import { ScheduleComplete } from './src/screens/ScheduleComplete';
+import { Routes } from './src/routes';
 
 
 SplashScreen.preventAutoHideAsync();
@@ -23,10 +25,7 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      {/* <Home/> */}
-      {/* <CarDetails></CarDetails> */}
-      {/* <Scheduling></Scheduling> */}
-      <SchedulingDetails></SchedulingDetails>
+      <Routes></Routes>
     </ThemeProvider>
   );
 }
