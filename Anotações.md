@@ -34,3 +34,22 @@ export function ConfirmButton({title, onPress} : Props) {
       <Container onPress={onPress}>
 
 => Se tirarmos o onPress das propriedades, o ConfirmButton não funcionará!
+
+## Outro bug do RectButton:
+O position absolute e o clique não funciona. Para resolver, vi na documentação que o GestureHandlerRootView é uma view, e, sendo assim, envolvi o componente do botão por um container, e esse sim seria um GestureHandlerRootView no arquivo styles. Colocando o position absolute nele, aí sim funcionou:
+"
+        <MyCarsButtonContainer>
+          <MyCarsButton
+            onPress={handleOpenMyCars}
+          > {...}
+        </MyCarsButtonContainer>
+
+export const MyCarsButtonContainer = styled(GestureHandlerRootView)`
+  position:absolute;
+  bottom: 13px;
+  right: 22px;
+
+
+
+## Comando pra começar o Json server:
+yarn api

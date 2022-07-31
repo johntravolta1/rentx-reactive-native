@@ -37,7 +37,6 @@ public class MainActivity extends ReactActivity {
     );
   }
 
-
   /**
    * Align the back button behavior with Android S
    * where moving root activities to background instead of finishing activities.
@@ -56,16 +55,5 @@ public class MainActivity extends ReactActivity {
     // Use the default back button implementation on Android S
     // because it's doing more than {@link Activity#moveTaskToBack} in fact.
     super.invokeDefaultOnBackPressed();
-  }
-
-  
-    @Override
-  protected ReactActivityDelegate createReactActivityDelegate() {
-    return new ReactActivityDelegate(this, getMainComponentName ()) {
-    @Override
-    protected ReactRootView createRootView() {
-    return new RNGestureHandlerEnabledRootView (MainActivity. this);
-      }
-    };
   }
 }
