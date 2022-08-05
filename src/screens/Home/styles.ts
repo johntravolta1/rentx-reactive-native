@@ -1,5 +1,5 @@
 import { FlatList } from 'react-native';
-import { GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
+import { Gesture, GestureHandlerRootView, RectButton } from 'react-native-gesture-handler';
 import { RFValue } from 'react-native-responsive-fontsize';
 import styled from 'styled-components/native';
 import { CarDTO } from '../../dtos/CarDTO';
@@ -52,6 +52,12 @@ export const MyCarsButton = styled(RectButton)`
 `;
 
 export const MyCarsButtonContainer = styled(GestureHandlerRootView)`
+  position:absolute;
+  bottom: 13px;
+  right: 22px;
+`
+
+export const AnimatedMyCarsButtonContainer = styled(GestureHandlerRootView)`
   position:absolute;
   bottom: 13px;
   right: 22px;

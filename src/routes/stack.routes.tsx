@@ -6,13 +6,15 @@ import { Scheduling } from '../screens/Scheduling'
 import { SchedulingDetails } from '../screens/SchedulingDetails'
 import { ScheduleComplete } from '../screens/ScheduleComplete'
 import { MyCars } from '../screens/MyCars'
+import { Splash } from '../screens/Splash'
 
 const {Navigator, Screen} = createNativeStackNavigator()
 
 export function StackRoutes() {
     return (
         <Navigator screenOptions={{headerShown: false}} >
-            <Screen name='Home' component={Home} options={{ title: '' }}></Screen>
+            <Screen name='Splash' component={Splash} options={{ title: '' }}></Screen>
+            <Screen name='Home' component={Home} options={{ title: '',gestureEnabled: false }}></Screen>
             <Screen name='CarDetails' component={CarDetails}></Screen>
             <Screen name='Scheduling' component={Scheduling}></Screen>
             <Screen name='SchedulingDetails' component={SchedulingDetails}></Screen>
