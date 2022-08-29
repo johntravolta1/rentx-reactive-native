@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BackHandler, StatusBar, StyleSheet } from 'react-native';
+import { Alert, BackHandler, Button, StatusBar, StyleSheet } from 'react-native';
 import { Container, Header, TotalCars, HeaderContent, CarList, MyCarsButton, MyCarsButtonContainer,AnimatedMyCarsButtonContainer } from './styles';
 
 import { RectButton, PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
@@ -13,15 +13,21 @@ import { Car } from '../../components/Car';
 import { useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
 import { CarDTO } from '../../dtos/CarDTO';
-import { Load } from '../../components/Load';
 import { useTheme } from 'styled-components';
 
 import {Ionicons} from '@expo/vector-icons'
 import Animated from 'react-native-reanimated';
 import { LoadAnimation } from '../../components/LoadAnimation';
 
+import NetInfo, { useNetInfo } from '@react-native-community/netinfo'
+import {synchronize} from '@nozbe/watermelondb/sync'
+import { database } from '../../database';
+import {Car as ModelCar} from '../../database/models/Cars'
+
+import SyncLogger from '@nozbe/watermelondb/sync/SyncLogger'
+
 export function Home() {
-  const [cars, setCars] =  useState<CarDTO[]>([]);
+  const [cars, setCars] =  useState<ModelCar[]>([]);
   const [loading, setLoading] = useState(true);
 
   const positionY = useSharedValue(0)
@@ -51,31 +57,103 @@ export function Home() {
     }
   })
 
+  const netInfo = useNetInfo()
   const navigation = useNavigation();
   const theme =useTheme()
+  
+  const logger = new SyncLogger(10)
+
+  async function offlineSynchronize() {
+    await synchronize({
+      log: logger.newLog(),
+      sendCreatedAsUpdated: false,
+      database,
+      pullChanges:async ({lastPulledAt}) => {        
+
+        const response= await api.get(`cars/sync/pull?lastPulledVersion=${lastPulledAt || 0 }`);
+        const {latestVersion, changes }= response.data;
+        // require('@nozbe/watermelondb/sync/debugPrintChanges').default(changes, false)
+        console.log('CHANGES:::')
+        console.log(changes)
+        const carCollection = database.get('cars')
+        const userCollection = database.get('users')
+        const cars = await carCollection.query().fetch();
+        const users = await userCollection.query().fetch();
+        console.log('=====DATABASE LOCAL:=======')
+        var seen = [];
+        console.log('all cars: '+ JSON.stringify(cars,function(key, val) {
+          if (val != null && typeof val == "object") {
+               if (seen.indexOf(val) >= 0) {
+                   return;
+               }
+               seen.push(val);
+           }
+           return val;
+       }))
+        console.log('all users: ' + JSON.stringify(users,function(key, val) {
+          if (val != null && typeof val == "object") {
+               if (seen.indexOf(val) >= 0) {
+                   return;
+               }
+               seen.push(val);
+           }
+           return val;
+       }));
+
+
+        return {changes, timestamp: latestVersion}
+      },
+      pushChanges:async ({changes}) => {
+        console.log('pushChanges')
+        console.log(changes)
+        const user = changes.users;
+        if (user.updated.length > 0) {
+          await api.post('/users/sync', user)
+        }
+      },
+
+    });
+    console.log('==============LOGGER===============')
+    console.log(logger.formattedLogs)
+  }
 
   useEffect(() => {
+    let isMounted = true;
     async function fetchCars()  {
       try {
-        const response = await api.get('/cars');
-        setCars(response.data);
+        // const response = await api.get('/cars');
+        const carCollection = database.get<ModelCar>('cars')
+        const cars = await carCollection.query().fetch();
+        // console.log(JSON.stringify(cars))
+        isMounted && setCars(cars);
+        console.log(cars)
+        // isMounted && setCars(response.data);
 
       } catch (error) {
         console.log(error)
       }
       finally {
-        setLoading(false)
+        isMounted && setLoading(false)
       }
     }
     
     fetchCars();
+    return () => {
+      isMounted = false;
+    }
   }, [])
 
-  useEffect(()=> {
-    BackHandler.addEventListener('hardwareBackPress', () => {
-      return true;
-    })
-  }, []);
+  useEffect(() => {
+    if(netInfo.isConnected) {
+      // Alert.alert('Você está online!')
+
+      offlineSynchronize()
+    } else {
+    }
+  }, [netInfo.isConnected])
+
+
+
 
   function handleCarDetails(car: CarDTO) {
     navigation.navigate('CarDetails', {car})
@@ -106,6 +184,8 @@ export function Home() {
               }
             </HeaderContent>
         </Header>
+        
+        {/* <Button title='sincronizar' onPress={offlineSynchronize}></Button> */}
 
         {loading ? <LoadAnimation></LoadAnimation> : 
           <CarList

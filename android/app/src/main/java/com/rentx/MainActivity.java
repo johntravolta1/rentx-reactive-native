@@ -30,12 +30,12 @@ public class MainActivity extends ReactActivity {
     return "main";
   }
 
-  @Override
-  protected ReactActivityDelegate createReactActivityDelegate() {
-    return new ReactActivityDelegateWrapper(this,
-      new ReactActivityDelegate(this, getMainComponentName())
-    );
-  }
+  // @Override
+  // protected ReactActivityDelegate createReactActivityDelegate() {
+  //   return new ReactActivityDelegateWrapper(this,
+  //     new ReactActivityDelegate(this, getMainComponentName())
+  //   );
+  // }
 
 
   /**

@@ -9,29 +9,35 @@ import { Container,
 } from './styles';
 import { StatusBar, useWindowDimensions } from 'react-native';
 import { ConfirmButton } from '../../components/ConfirmButton';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Button } from '../../components/Button';
 
-export function ScheduleComplete() {
+interface Params {
+    title: string;
+    message: string;
+    nextScreenRoute: string;
+}
+
+export function Confirmation() {
     const {width} = useWindowDimensions();
     const navigation = useNavigation();
 
+    const route = useRoute();
+    const {title, message, nextScreenRoute} = route.params as Params
     function handleBackHome() {
-        navigation.navigate('Home')
+        navigation.navigate(nextScreenRoute)
     }
 
   return (
     <Container>
         <StatusBar barStyle='light-content' translucent backgroundColor='transparent'></StatusBar>
-        <LogoSvg width={width}></LogoSvg>
         <Content>
+            <LogoSvg width={width}/>
             <DoneSvg width={80} height={80}></DoneSvg>
-            <Title>Carro alugado!</Title>
+            <Title>{title}</Title>
             <Message>
-                Agora você só precisa ir {'\n'}
-                até a concessionária da RENTX {'\n'}
-                pegar seu automóvel
+                {message}
             </Message>
         </Content>
 

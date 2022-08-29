@@ -1,17 +1,15 @@
-import { Home } from './src/screens/Home';
+
+import "./ignoreWarnings"; //Warning:ViewPropTypes will be removed from React Native. Migrate to ViewPropTypes exported from 'deprecated-react-native-prop-types'.
 import { Archivo_400Regular, Archivo_500Medium, Archivo_600SemiBold } from '@expo-google-fonts/archivo'
 import {useFonts, Inter_400Regular, Inter_500Medium} from '@expo-google-fonts/inter'
 import {ThemeProvider} from 'styled-components'
 import theme from './src/styles/theme';
-import { CarDetails } from './src/screens/CarDetails';
 import * as SplashScreen from 'expo-splash-screen';
-import { Scheduling } from './src/screens/Scheduling';
-import { SchedulingDetails } from './src/screens/SchedulingDetails';
-import { ScheduleComplete } from './src/screens/ScheduleComplete';
 import { Routes } from './src/routes';
+import { AppProvider } from "./src/hooks";
 
 
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync();
 
 export default function App() {
 
@@ -20,12 +18,14 @@ export default function App() {
   })
 
   if (fontsLoaded) {
-    SplashScreen.hideAsync();
+    // SplashScreen.hideAsync();
   }
 
   return (
     <ThemeProvider theme={theme}>
-      <Routes></Routes>
+      <AppProvider>  
+        <Routes></Routes>
+      </AppProvider>
     </ThemeProvider>
   );
 }
